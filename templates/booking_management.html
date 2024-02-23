@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Booking Management
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Booking Management</h1>
+        <!-- Booking List -->
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h2 class="mb-0">Booking List</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <!-- Table headers -->
+                        <thead>
+                            <tr>
+
+                                <th>ID</th>
+                                <th>Slot</th>
+                                <th>Vehicle Number</th>
+                                <th>Contact Number</th>
+                                <th>Amount</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Total Time</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loop through booking data -->
+                            {% for booking in bookings %}
+                            <tr class="parking-animation">
+                                <!-- Table data -->
+                                <td>{{ booking.b_id }}</td>
+                                <td>{{ booking.slot_name }}</td>
+                                <td>{{ booking.b_vehicleno }}</td>
+                                <td>{{ booking.b_contact }}</td>
+                                <td>{{ booking.b_amount }}</td>
+                                <td>{{ booking.b_startdate }}</td>
+                                <td>{{ booking.b_enddate }}</td>
+                                <td>{{ booking.b_totaltime }}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editBookingModal{{ booking.b_id }}">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- Modal for editing booking -->
+                            <div class="modal fade" id="editBookingModal{{ booking.b_id }}" tabindex="-1" role="dialog" aria-labelledby="editBookingModalLabel{{ booking.b_id }}" aria-hidden="true">
+                                <!-- Modal content for editing booking -->
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-info text-white">
+                                            <h5 class="modal-title" id="editBookingModalLabel{{ booking.b_id }}">Edit Booking</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <form action="{% url 'booking_management' user_id=user.id %}" method="POST">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <input type="hidden" name="booking_id" value="{{ booking.b_id }}">
+                                                <!-- <div class="form-group">
+                                                    <label for="slot">Slot:</label>
+                                                    <input type="text" class="form-control" id="slot" name="slot" value="{{ booking.b_slot }}">
+                                                </div> -->
+												<div class="form-group">
+													<label for="slot">Slot:</label>
+													<select class="form-control" id="slot" name="slot">
+														{% for slot in slots %}
+															<option value="{{ slot.s_id }}">{{ slot.s_slot }}</option>
+														{% endfor %}
+													</select>
+													{% if slot_already_booked %}
+														<small class="text-danger">This slot is already booked. Please select another slot.</small>
+													{% endif %}
+												</div>
+                                                <div class="form-group">
+                                                    <label for="vehicle_number">Vehicle Number:</label>
+                                                    <input type="text" class="form-control" id="vehicle_number" name="vehicle_number" value="{{ booking.b_vehicleno }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="contact">Contact:</label>
+                                                    <input type="text" class="form-control" id="contact" name="contact" value="{{ booking.b_contact }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="amount">Amount:</label>
+                                                    <input type="text" class="form-control" id="amount" name="amount" value="{{ booking.b_amount }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="b_startdate">Start Date:</label>
+                                                    <input type="date" class="form-control" id="b_startdate" name="b_startdate" value="{{ booking.b_startdate }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="b_enddate">End Date:</label>
+                                                    <input type="date" class="form-control" id="b_enddate" name="b_enddate" value="{{ booking.b_enddate }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="b_totaltime">Total Time:</label>
+                                                    <input type="text" class="form-control" id="b_totaltime" name="b_totaltime" value="{{ booking.b_totaltime }}">
+                                                </div>
+                                                <!-- Add other form fields as needed -->
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Button to trigger modal for adding a new booking -->
+        <button class="btn btn-success mt-3" data-toggle="modal" data-target="#addBookingModal">
+            <i class="fas fa-plus"></i> Add Booking
+        </button>
+    </div>
+
+    <!-- Add Booking Modal -->
+    <div class="modal fade" id="addBookingModal" tabindex="-1" role="dialog" aria-labelledby="addBookingModalLabel" aria-hidden="true">
+        <!-- Modal content for adding booking -->
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="addBookingModalLabel">Add Booking</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{% url 'booking_management' user_id=user.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <!-- <div class="form-group">
+                            <label for="slot">Slot:</label>
+                            <input type="text" class="form-control" id="slot" name="slot">
+                        </div> -->
+						<div class="form-group">
+							<label for="slot">Slot:</label>
+							<select class="form-control" id="slot" name="slot">
+								{% for slot in slots %}
+									<option value="{{ slot.s_id }}">{{ slot.s_slot }}</option>
+								{% endfor %}
+							</select>
+							{% if slot_already_booked %}
+								<small class="text-danger">This slot is already booked. Please select another slot.</small>
+							{% endif %}
+						</div>
+
+                        <div class="form-group">
+                            <label for="vehicle_number">Vehicle Number:</label>
+                            <input type="text" class="form-control" id="vehicle_number" name="vehicle_number">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact">Contact:</label>
+                            <input type="text" class="form-control" id="contact" name="contact">
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Amount:</label>
+                            <input type="text" class="form-control" id="amount" name="amount">
+                        </div>
+                        <div class="form-group">
+                            <label for="b_startdate">Start Date:</label>
+                            <input type="date" class="form-control" id="b_startdate" name="b_startdate">
+                        </div>
+                        <div class="form-group">
+                            <label for="b_enddate">End Date:</label>
+                            <input type="date" class="form-control" id="b_enddate" name="b_enddate">
+                        </div>
+                        <div class="form-group">
+                            <label for="b_totaltime">Total Time:</label>
+                            <input type="text" class="form-control" id="b_totaltime" name="b_totaltime">
+                        </div>
+                        <!-- Add other form fields as needed -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Add Booking</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+	 <!-- Include Bootstrap JS for alert functionality -->
+	 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+	 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+	 <script>
+		 // Check if the alert message needs to be displayed
+		 const showAlert = "{{ alert_slot_booked }}";
+		 if (showAlert === "True") {
+			 // Show the alert message
+			 document.getElementById("alertSlotBooked").classList.remove("d-none");
+		 }
+	 </script>
+	{% endblock %}

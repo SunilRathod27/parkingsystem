@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking System</title>
+    <!-- Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom CSS for animations and layout -->
+    <style>
+        /* Animation */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Parking UI */
+        .parking-ui {
+            animation: fadeInDown 1s ease;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .parking-ui h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .parking-ui p {
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: #666;
+        }
+
+        .parking-ui .btn {
+            font-size: 20px;
+            padding: 10px 30px;
+            margin-right: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .parking-ui .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .parking-ui .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .parking-ui .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .parking-ui .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+        /* Logo */
+        .logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        /* Car animation */
+        @keyframes carParking {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(0%);
+            }
+        }
+
+        .car-parking {
+            animation: carParking 2s ease;
+            margin-bottom: 50px;
+        }
+
+        /* Hero image */
+        .hero-image {
+            background-image: url('../static/parking.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .hero-text {
+            text-align: center;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero section with image -->
+    <div class="hero-image">
+        <div class="hero-text">
+            <h1>Welcome to our Parking System!</h1>
+            <p>Book your parking slot now and enjoy convenient parking solutions.</p>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="parking-ui mt-5">
+                    <img src="{% static 'logo.png' %}" alt="Parking System Logo" class="logo">
+                    <div class="car-parking">
+                        <i class="fas fa-car fa-5x"></i>
+                    </div>
+                    <h2>Book Your Parking Slot Now</h2>
+                    <p>Our advanced parking management system allows you to conveniently book parking slots online, ensuring you have a guaranteed spot waiting for you when you arrive. Say goodbye to the hassle of searching for parking spaces on busy streets or worrying about finding a spot when you're running late.</p>
+					<a href="/admin-login/" class="btn btn-primary">Login</a>
+                    <a href="/register/" class="btn btn-secondary">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS scripts -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

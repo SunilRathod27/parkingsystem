@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Feedback Management
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Feedback Management</h1>
+        <!-- Feedback List -->
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h2 class="mb-0">Feedback List</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <!-- Table headers -->
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loop through feedback data -->
+                            {% for feedback in feedbacks %}
+                            <tr class="parking-animation">
+                                <!-- Table data -->
+                                <td>{{ feedback.fid }}</td>
+                                <td>{{ feedback.f_name }}</td>
+                                <td>{{ feedback.f_contact }}</td>
+                                <td>{{ feedback.f_message }}</td>
+                                <td>{{ feedback.f_status }}</td>
+                                <td>{{ feedback.focdate }}</td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#editFeedbackModal{{ feedback.fid }}">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteFeedbackModal{{ feedback.fid }}">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- Modal for editing feedback -->
+                            <div class="modal fade" id="editFeedbackModal{{ feedback.fid }}" tabindex="-1" role="dialog" aria-labelledby="editFeedbackModalLabel{{ feedback.fid }}" aria-hidden="true">
+                                <!-- Modal content for editing feedback -->
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-info text-white">
+                                            <h5 class="modal-title" id="editFeedbackModalLabel{{ feedback.fid }}">Edit Feedback</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <form method="POST" action="{% url 'update_feedback' feedback.fid %}">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <input type="hidden" name="feedback_id" value="{{ feedback.fid }}">
+                                                <div class="form-group">
+                                                    <label for="f_name">Name:</label>
+                                                    <input type="text" class="form-control" id="f_name" name="f_name" value="{{ feedback.f_name }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="f_contact">Contact:</label>
+                                                    <input type="text" class="form-control" id="f_contact" name="f_contact" value="{{ feedback.f_contact }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="f_message">Message:</label>
+                                                    <textarea class="form-control" id="f_message" name="f_message" rows="5">{{ feedback.f_message }}</textarea>
+                                                </div>
+                                                <!-- Add other form fields as needed -->
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Modal for deleting feedback -->
+                            <div class="modal fade" id="deleteFeedbackModal{{ feedback.fid }}" tabindex="-1" role="dialog" aria-labelledby="deleteFeedbackModalLabel{{ feedback.fid }}" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title" id="deleteFeedbackModalLabel{{ feedback.fid }}">Confirm Delete</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete this feedback?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <a href="{% url 'delete_feedback' feedback.fid %}" class="btn btn-danger">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Button to trigger modal for adding a new feedback -->
+        <button class="btn btn-success mt-3" data-toggle="modal" data-target="#addFeedbackModal">
+            <i class="fas fa-plus"></i> Add Feedback
+        </button>
+    </div>
+
+    <!-- Add Feedback Modal -->
+    <div class="modal fade" id="addFeedbackModal" tabindex="-1" role="dialog" aria-labelledby="addFeedbackModalLabel" aria-hidden="true">
+        <!-- Modal content for adding feedback -->
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="addFeedbackModalLabel">Add Feedback</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="{% url 'add_feedback' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="f_name">Name:</label>
+                            <input type="text" class="form-control" id="f_name" name="f_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="f_contact">Contact:</label>
+                            <input type="text" class="form-control" id="f_contact" name="f_contact">
+                        </div>
+                        <div class="form-group">
+                            <label for="f_message">Message:</label>
+                            <textarea class="form-control" id="f_message" name="f_message" rows="5"></textarea>
+                        </div>
+                        <!-- Add other form fields as needed -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Add Feedback</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

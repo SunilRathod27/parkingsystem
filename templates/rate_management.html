@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Rate Management
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Rate Management</h1>
+        <!-- Rate List -->
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h2 class="mb-0">Rate List</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <!-- Table headers -->
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Type ID</th>
+                                <th>Rate</th>
+                                <th>Created Date</th>
+                                <th>Updated Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loop through rate data -->
+                            {% for rate in rates %}
+                            <tr class="parking-animation">
+                                <!-- Table data -->
+                                <td>{{ rate.r_id }}</td>
+                                <td>{{ rate.rtid }}</td>
+                                <td>{{ rate.r_rate }}</td>
+                                <td>{{ rate.r_cdate }}</td>
+                                <td>{{ rate.r_udate }}</td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#editRateModal{{ rate.r_id }}">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteRateModal{{ rate.r_id }}">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- Modal for editing rate -->
+                            <div class="modal fade" id="editRateModal{{ rate.r_id }}" tabindex="-1" role="dialog" aria-labelledby="editRateModalLabel{{ rate.r_id }}" aria-hidden="true">
+                                <!-- Modal content for editing rate -->
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-info text-white">
+                                            <h5 class="modal-title" id="editRateModalLabel{{ rate.r_id }}">Edit Rate</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <form method="POST" action="{% url 'update_rate' rate.r_id %}">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <input type="hidden" name="rate_id" value="{{ rate.r_id }}">
+                                                <div class="form-group">
+                                                    <label for="rtid">Rate ID:</label>
+                            <input type="text" class="form-control" id="rtid" name="rtid" value="{{ rate.rtid }}" readonly>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="r_rate">Rate:</label>
+                            <input type="text" class="form-control" id="r_rate" name="r_rate" value="{{ rate.r_rate }}">
+                                                </div>
+                                                <!-- Add other form fields as needed -->
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Modal for deleting rate -->
+                            <div class="modal fade" id="deleteRateModal{{ rate.r_id }}" tabindex="-1" role="dialog" aria-labelledby="deleteRateModalLabel{{ rate.r_id }}" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-danger text-white">
+                                            <h5 class="modal-title" id="deleteRateModalLabel{{ rate.r_id }}">Confirm Delete</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete this rate?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <a href="{% url 'delete_rate' rate.r_id %}" class="btn btn-danger">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Button to trigger modal for adding a new rate -->
+        <button class="btn btn-success mt-3" data-toggle="modal" data-target="#addRateModal">
+            <i class="fas fa-plus"></i> Add Rate
+        </button>
+    </div>
+
+    <!-- Add Rate Modal -->
+    <div class="modal fade" id="addRateModal" tabindex="-1" role="dialog" aria-labelledby="addRateModalLabel" aria-hidden="true">
+        <!-- Modal content for adding rate -->
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="addRateModalLabel">Add Rate</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="{% url 'add_rate' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group">
+							<label for="rtid">Rate ID:</label>
+                            <input type="text" class="form-control" id="rtid" name="rtid">
+                        </div>
+                        <div class="form-group">
+							<label for="r_rate">Rate:</label>
+                            <input type="text" class="form-control" id="r_rate" name="r_rate">
+                        </div>
+                        <!-- Add other form fields as needed -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Add Rate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

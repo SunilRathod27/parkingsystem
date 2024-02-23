@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+</head>
+<body>
+    <h2>Login</h2>
+	
+    <form method="post">
+        {% csrf_token %}
+        <label for="a_username">Username:</label>
+        <input type="text" id="a_username" name="a_username" required><br>
+        <label for="a_password">Password:</label>
+        <input type="password" id="a_password" name="a_password" required><br>
+        <button type="submit">Login</button>
+    </form>
+
+    <!-- JavaScript code to display notifications -->
+    {% if success_message %}
+    <script>
+		// console.log("success_message",success_message);
+        Swal.fire({
+            icon: 'success',
+            title: '{{ success_message }}',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    </script>
+    {% endif %}
+
+    {% if error_message %}
+    <script>
+		// console.log("success_message",success_message);
+        Swal.fire({
+            icon: 'error',
+            title: '{{ error_message }}',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    </script>
+    {% endif %}
+
+    <!-- Bootstrap JS -->
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Update Rate
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Update Rate</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <form method="POST" action="{% url 'update_rate' rate.r_id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="rtid">Rate ID:</label>
+                        <input type="text" class="form-control" id="rtid" name="rtid" value="{{ rate.rtid }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="r_rate">Rate:</label>
+                        <input type="text" class="form-control" id="r_rate" name="r_rate" value="{{ rate.r_rate }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="r_cdate">Creation Date:</label>
+                        <input type="date" class="form-control" id="r_cdate" name="r_cdate" value="{{ rate.r_cdate }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="r_udate">Update Date:</label>
+                        <input type="date" class="form-control" id="r_udate" name="r_udate" value="{{ rate.r_udate }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

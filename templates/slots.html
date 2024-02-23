@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Slots</title>
+</head>
+<body>
+    <h1>Available Slots</h1>
+    <ul>
+        {% for slot in slots %}
+            <li>{{ slot.s_slot }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
