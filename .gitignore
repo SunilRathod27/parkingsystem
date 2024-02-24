@@ -192,6 +192,7 @@ local_settings.py
 
 # Ignore migrations folder
 */migrations/
+/parking/migrations/
 
 # Ignore system files
 .DS_Store
