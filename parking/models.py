@@ -16,10 +16,17 @@ class Booking(models.Model):
     b_date = models.DateField()
     b_startdate = models.CharField(max_length=20)
     b_enddate = models.CharField(max_length=20)
-    b_totaltime = models.CharField(max_length=20)
+    b_totaltime = models.IntegerField()
     b_amount = models.IntegerField()
+    DURATION_CHOICES = [
+        ('Hourly', 'Hourly'),
+        ('Daily', 'Daily'),
+        ('Monthly', 'Monthly'),
+    ]
+    duration_type = models.CharField(max_length=10, choices=DURATION_CHOICES)
     b_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Confirm', 'Confirm'), ('Complete', 'Complete')])
     b_udate = models.DateTimeField()
+
 
 class Feedback(models.Model):
     fid = models.AutoField(primary_key=True)
@@ -31,7 +38,7 @@ class Feedback(models.Model):
 
 class Rate(models.Model):
     r_id = models.AutoField(primary_key=True)
-    rtid = models.IntegerField()
+    rtid = models.CharField(max_length=20)
     r_rate = models.IntegerField()
     r_cdate = models.DateTimeField()
     r_udate = models.DateTimeField()
@@ -42,3 +49,11 @@ class Slot(models.Model):
     s_slot = models.CharField(max_length=20)
     s_cdate = models.DateTimeField()
     s_udate = models.DateTimeField()
+
+class Payment(models.Model):
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
+    hours_used = models.IntegerField()
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateTimeField(default=datetime.now)
+
+

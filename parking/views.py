@@ -17,6 +17,7 @@ from django.http import HttpResponseBadRequest
 from django.db.models import Subquery, OuterRef
 # Define class for Admin registration
 from .forms import LoginForm
+import calendar
 class AdminRegister(generics.CreateAPIView):
     queryset = Admin.objects.all()
     serializer_class = AdminSerializer
@@ -230,54 +231,60 @@ def admin_logout(request):
     logout(request)
     messages.success(request, 'Logout successful!')
     return redirect('admin_login')
+
+
+
+
 def booking_management(request, user_id):
     print("user_id", user_id)
     if request.method == 'POST':
         # Handling form submission for adding or updating booking
         booking_id = request.POST.get('booking_id')
         slot_id = request.POST.get('slot')
+        duration_type = request.POST.get('duration_type')
 
-        # Check if the selected slot is already booked
+        # Calculate total time based on duration type
+        if duration_type == 'Hourly':
+            total_time = int(request.POST.get('b_totaltime'))
+        elif duration_type == 'Daily':
+            total_time = int(request.POST.get('b_totaltime'))
+        elif duration_type == 'Monthly':
+            current_month = datetime.now().month
+            days_in_current_month = calendar.monthrange(datetime.now().year, current_month)[1]
+            total_time = int(request.POST.get('b_totaltime')) * days_in_current_month
+
+        # Get the Admin instance corresponding to the user_id
+        admin_instance = User.objects.get(pk=user_id)
+
+        # Calculate amount based on duration type and total time
+        amount = calculate_parking_amount(duration_type, total_time)
+
         if booking_id:  # For updating existing booking
             existing_booking = Booking.objects.get(pk=booking_id)
             if existing_booking.b_slot_id != slot_id and Booking.objects.filter(b_slot_id=slot_id).exists():
                 return HttpResponseBadRequest("The selected slot is already booked.")
 
-        elif Booking.objects.filter(b_slot_id=slot_id).exists():  # For adding new booking
-            return HttpResponseBadRequest("The selected slot is already booked.")
-
-        # Get the Admin instance corresponding to the user_id
-        admin_instance = User.objects.get(pk=user_id)
-
-        # Proceed with booking creation or update
-        if booking_id:  # Update existing booking
-            booking = Booking.objects.get(pk=booking_id)
-            # Update booking fields based on form data
-            booking.b_slot_id = slot_id
-            booking.b_vehicleno = request.POST.get('vehicle_number')
-            booking.b_contact = request.POST.get('contact')
-            booking.b_amount = request.POST.get('amount')
-            booking.b_u_id = admin_instance  # Assign the Admin instance
-            booking.b_udate = timezone.now()  # Set b_udate to current time
-            booking.b_date = datetime.today().date()   # Get b_date from the request
-            booking.b_startdate = request.POST.get('b_startdate')  # Get b_startdate from the request
-            booking.b_enddate = request.POST.get('b_enddate')  # Get b_enddate from the request
-            booking.b_totaltime = request.POST.get('b_totaltime')  # Get b_totaltime from the request
-            # Update other fields accordingly
-            booking.save()
-        else:  # Add new booking
+            # Update existing booking fields
+            existing_booking.b_slot_id = slot_id
+            existing_booking.b_vehicleno = request.POST.get('vehicle_number')
+            existing_booking.b_contact = request.POST.get('contact')
+            existing_booking.duration_type = request.POST.get('duration_type')
+            existing_booking.b_amount = amount
+            existing_booking.b_totaltime=total_time
+            existing_booking.b_u_id = admin_instance
+            existing_booking.b_udate = datetime.now()
+            existing_booking.save()
+        else:  # For adding new booking
             new_booking = Booking.objects.create(
                 b_slot_id=slot_id,
                 b_vehicleno=request.POST.get('vehicle_number'),
                 b_contact=request.POST.get('contact'),
-                b_u_id=admin_instance,  # Assign the Admin instance
-                b_amount=request.POST.get('amount'),
+                duration_type=request.POST.get('duration_type'),
+                b_u_id=admin_instance,
+                b_amount=amount,
                 b_date=datetime.today().date(),
-                b_startdate=request.POST.get('b_startdate'),  # Get b_startdate from the request
-                b_enddate=request.POST.get('b_enddate'),  # Get b_enddate from the request
-                b_totaltime=request.POST.get('b_totaltime'),  # Get b_totaltime from the request
-                b_udate=timezone.now(),  # Set b_udate to current time
-                # Add other fields as needed
+                b_totaltime=total_time,
+                b_udate=datetime.now(),
             )
 
         return redirect('booking_management', user_id=user_id)
@@ -300,7 +307,6 @@ def booking_management(request, user_id):
             slot_id = int(booking.b_slot_id)
             slot_name = slot_names.get(slot_id)
             booking.slot_name = slot_name
-            # print(f"Booking ID: {booking.b_slot_id}, Slot Name: {slot_name}")
 
         # Pass bookings to the template context for rendering
 
@@ -313,6 +319,21 @@ def booking_management(request, user_id):
         }
         return render(request, 'booking_management.html', context)
 
+
+
+def calculate_parking_amount(duration_type, total_time):
+    # Fetch rate from Rate model based on duration type
+    if duration_type == 'Hourly':
+        rate_obj = Rate.objects.get(rtid='Hourly')  # Assuming hourly rate has rtid=1
+    elif duration_type == 'Daily':
+        rate_obj = Rate.objects.get(rtid='Daily')  # Assuming daily rate has rtid=2
+    elif duration_type == 'Monthly':
+        rate_obj = Rate.objects.get(rtid='Monthly')  # Assuming monthly rate has rtid=3
+
+    # Calculate amount using fetched rate
+    amount = total_time * rate_obj.r_rate
+
+    return amount
 
 def slots_view(request):
     slots = Slot.objects.all()

@@ -18,14 +18,11 @@
                         <!-- Table headers -->
                         <thead>
                             <tr>
-
                                 <th>ID</th>
                                 <th>Slot</th>
                                 <th>Vehicle Number</th>
                                 <th>Contact Number</th>
                                 <th>Amount</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
                                 <th>Total Time</th>
                                 <th>Action</th>
                             </tr>
@@ -40,8 +37,6 @@
                                 <td>{{ booking.b_vehicleno }}</td>
                                 <td>{{ booking.b_contact }}</td>
                                 <td>{{ booking.b_amount }}</td>
-                                <td>{{ booking.b_startdate }}</td>
-                                <td>{{ booking.b_enddate }}</td>
                                 <td>{{ booking.b_totaltime }}</td>
                                 <td>
                                     <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editBookingModal{{ booking.b_id }}">
@@ -64,20 +59,16 @@
                                             {% csrf_token %}
                                             <div class="modal-body">
                                                 <input type="hidden" name="booking_id" value="{{ booking.b_id }}">
-                                                <!-- <div class="form-group">
-                                                    <label for="slot">Slot:</label>
-                                                    <input type="text" class="form-control" id="slot" name="slot" value="{{ booking.b_slot }}">
-                                                </div> -->
-												<div class="form-group">
+                                                <div class="form-group">
 													<label for="slot">Slot:</label>
-													<select class="form-control" id="slot" name="slot">
-														{% for slot in slots %}
-															<option value="{{ slot.s_id }}">{{ slot.s_slot }}</option>
-														{% endfor %}
-													</select>
-													{% if slot_already_booked %}
-														<small class="text-danger">This slot is already booked. Please select another slot.</small>
-													{% endif %}
+							<select class="form-control" id="slot" name="slot">
+								{% for slot in slots %}
+									<option value="{{ slot.s_id }}">{{ slot.s_slot }}</option>
+								{% endfor %}
+							</select>
+							{% if slot_already_booked %}
+								<small class="text-danger">This slot is already booked. Please select another slot.</small>
+							{% endif %}
 												</div>
                                                 <div class="form-group">
                                                     <label for="vehicle_number">Vehicle Number:</label>
@@ -88,22 +79,21 @@
                                                     <input type="text" class="form-control" id="contact" name="contact" value="{{ booking.b_contact }}">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label for="amount">Amount:</label>
-                                                    <input type="text" class="form-control" id="amount" name="amount" value="{{ booking.b_amount }}">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="b_startdate">Start Date:</label>
-                                                    <input type="date" class="form-control" id="b_startdate" name="b_startdate" value="{{ booking.b_startdate }}">
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="b_enddate">End Date:</label>
-                                                    <input type="date" class="form-control" id="b_enddate" name="b_enddate" value="{{ booking.b_enddate }}">
+                                                    <label for="duration_type">Duration Type:</label>
+													<select class="form-control" id="duration_type" name="duration_type">
+														<option value="Hourly" {% if booking.duration_type == 'Hourly' %} selected {% endif %}>Hourly</option>
+														<option value="Daily" {% if booking.duration_type == 'Daily' %} selected {% endif %}>Daily</option>
+														<option value="Monthly" {% if booking.duration_type == 'Monthly' %} selected {% endif %}>Monthly</option>
+													</select>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="b_totaltime">Total Time:</label>
                                                     <input type="text" class="form-control" id="b_totaltime" name="b_totaltime" value="{{ booking.b_totaltime }}">
                                                 </div>
-                                                <!-- Add other form fields as needed -->
+												<div class="form-group">
+                                                    <label for="amount">Amount:</label>
+                                                    <input type="text" class="form-control" id="amount" name="amount" value="{{ booking.b_amount }}" readonly>
+                                                </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -139,11 +129,9 @@
                 <form action="{% url 'booking_management' user_id=user.id %}" method="POST">
                     {% csrf_token %}
                     <div class="modal-body">
-                        <!-- <div class="form-group">
-                            <label for="slot">Slot:</label>
-                            <input type="text" class="form-control" id="slot" name="slot">
-                        </div> -->
-						<div class="form-group">
+                        <div class="form-group">
+                            <!-- <label for="slot">Slot:</label>
+                            <input type="text" class="form-control" id="slot" name="slot"> -->
 							<label for="slot">Slot:</label>
 							<select class="form-control" id="slot" name="slot">
 								{% for slot in slots %}
@@ -154,7 +142,6 @@
 								<small class="text-danger">This slot is already booked. Please select another slot.</small>
 							{% endif %}
 						</div>
-
                         <div class="form-group">
                             <label for="vehicle_number">Vehicle Number:</label>
                             <input type="text" class="form-control" id="vehicle_number" name="vehicle_number">
@@ -164,22 +151,22 @@
                             <input type="text" class="form-control" id="contact" name="contact">
                         </div>
                         <div class="form-group">
-                            <label for="amount">Amount:</label>
-                            <input type="text" class="form-control" id="amount" name="amount">
-                        </div>
-                        <div class="form-group">
-                            <label for="b_startdate">Start Date:</label>
-                            <input type="date" class="form-control" id="b_startdate" name="b_startdate">
-                        </div>
-                        <div class="form-group">
-                            <label for="b_enddate">End Date:</label>
-                            <input type="date" class="form-control" id="b_enddate" name="b_enddate">
+                            <label for="duration_type">Duration Type:</label>
+                            <select class="form-control" id="duration_type" name="duration_type">
+                                <option value="Hourly">Hourly</option>
+                                <option value="Daily">Daily</option>
+                                <option value="Monthly">Monthly</option>
+                            </select>
+							
                         </div>
                         <div class="form-group">
                             <label for="b_totaltime">Total Time:</label>
                             <input type="text" class="form-control" id="b_totaltime" name="b_totaltime">
                         </div>
-                        <!-- Add other form fields as needed -->
+						<div class="form-group">
+                            <label for="amount">Amount:</label>
+                            <input type="text" class="form-control" id="amount" name="amount" readonly>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -195,11 +182,33 @@
 	 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 	 <script>
-		 // Check if the alert message needs to be displayed
-		 const showAlert = "{{ alert_slot_booked }}";
-		 if (showAlert === "True") {
-			 // Show the alert message
-			 document.getElementById("alertSlotBooked").classList.remove("d-none");
-		 }
+		 // Function to calculate total time based on duration type
+		 $('#duration_type').change(function() {
+		     var durationType = $(this).val();
+		     if (durationType === 'Hourly') {
+		         $('#b_totaltime').val('1');  // Assuming 1 hour for hourly duration
+		     } else if (durationType === 'Daily') {
+		         $('#b_totaltime').val('1');  // Assuming 1 day for daily duration
+		     } else if (durationType === 'Monthly') {
+		         var currentMonthDays = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+		         $('#b_totaltime').val(currentMonthDays);  // Days in current month for monthly duration
+		     }
+		 });
+		 
+    // Function to calculate total time based on duration type when editing a booking
+    $('#editBookingModal{{ booking.b_id }}').on('show.bs.modal', function (event) {
+        var modal = $(this);
+        var durationType = modal.find('#duration_type').val();
+        if (durationType === 'Hourly') {
+            modal.find('#b_totaltime').val('1');  // Assuming 1 hour for hourly duration
+        } else if (durationType === 'Daily') {
+            modal.find('#b_totaltime').val('1');  // Assuming 1 day for daily duration
+        } else if (durationType === 'Monthly') {
+            var currentMonthDays = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+            modal.find('#b_totaltime').val(currentMonthDays);  // Days in current month for monthly duration
+        }
+    });
+
+
 	 </script>
-	{% endblock %}
+{% endblock %}
